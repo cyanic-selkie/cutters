@@ -1,0 +1,14 @@
+[package]
+name = "cutters"
+version = "0.1.0"
+authors = ["cyanic-selkie <cyanic-selkie@protonmail.com>"]
+edition = "2021"
+description = "Rule based sentence segmentation library."
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/cyanic-selkie/cutters"
+categories = ["text-processing"]
+
+[dependencies]
+pest = "2.1.3"
+pest_derive = "2.1.0"

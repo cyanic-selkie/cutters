@@ -1,0 +1,86 @@
+contraction = _{
+    ("'" ~
+        ("t" | "n" | "cause" | "cept" | "ve" | "ye" | "en" | "er" | "em" | "s" | "gainst" | "d" | "ll" | "re" | "nt" | "m" | "o" | "am" | "neath" | "round" | "thout" | "til" | "tis" | "twas" | "tween" | "twere" | "all" | "ren" | "at" | "know" ) // suffixes
+    ) |
+    ("o'clock" | "ol'") // full
+}
+
+abbreviation = _{
+    (
+        (
+            ("ca" | "cca" | "def" | "anon" | "ed" | "no" | "vs" | "est") | // common
+            ("Mr" | "Mrs" | "Dr" | "Esq" | "Hon" | "Jr" | "Mr" | "Mrs" | "Ms" | "Msgr" | "Prof" | "Rev" | "Rt" | "Sr") | // titles
+            ("Ave" | "Blvd" | "Cyn" | "Dr" | "Ln" | "Rd" | "St" | "Ltd")
+        )
+        ~ WHITE_SPACE* ~ ".") |
+    // special
+    ("P" ~ WHITE_SPACE* ~ "." ~ WHITE_SPACE* ~ "S" ~ WHITE_SPACE* ~ ".") | // P.S.
+    ("P" ~ WHITE_SPACE* ~ "." ~ WHITE_SPACE* ~ "P" ~ WHITE_SPACE* ~ "." ~ WHITE_SPACE* ~ "S" ~ WHITE_SPACE* ~ ".") | // P.P.S.
+    ("Q" ~ WHITE_SPACE* ~ "." ~ WHITE_SPACE* ~ "E" ~ WHITE_SPACE* ~ "." ~ WHITE_SPACE* ~ "D" ~ WHITE_SPACE* ~ ".") | // Q.E.D.
+    ("R" ~ WHITE_SPACE* ~ "." ~ WHITE_SPACE* ~ "I" ~ WHITE_SPACE* ~ "." ~ WHITE_SPACE* ~ "P" ~ WHITE_SPACE* ~ ".") | // R.I.P.
+    ("S" ~ WHITE_SPACE* ~ "." ~ WHITE_SPACE* ~ "O" ~ WHITE_SPACE* ~ "." ~ WHITE_SPACE* ~ "S" ~ WHITE_SPACE* ~ ".") | // S.O.S.
+    ("e" ~ WHITE_SPACE* ~ "." ~ WHITE_SPACE* ~ "g" ~ WHITE_SPACE* ~ ".") | // e.g.
+    ("i" ~ WHITE_SPACE* ~ "." ~ WHITE_SPACE* ~ "e" ~ WHITE_SPACE* ~ ".") | // i.e.
+    ("n" ~ WHITE_SPACE* ~ "." ~ WHITE_SPACE* ~ "b" ~ WHITE_SPACE* ~ ".") | // n.b.
+    ("Ph" ~ WHITE_SPACE* ~ "." ~ WHITE_SPACE* ~ "D") | // Ph.d
+    ("A" ~ WHITE_SPACE* ~ "." ~ WHITE_SPACE* ~ "D" ~ WHITE_SPACE* ~ ".") | // A.D
+    ("B" ~ WHITE_SPACE* ~ "." ~ WHITE_SPACE* ~ "C" ~ WHITE_SPACE* ~ ".") | // B.C.
+    ("a" ~ WHITE_SPACE* ~ "." ~ WHITE_SPACE* ~ "m" ~ WHITE_SPACE* ~ ".") | // a.m.
+    ("p" ~ WHITE_SPACE* ~ "." ~ WHITE_SPACE* ~ "m" ~ WHITE_SPACE* ~ ".") | // p.m.
+    ("O" ~ WHITE_SPACE* ~ "." ~ WHITE_SPACE* ~ "K" ~ WHITE_SPACE* ~ ".") // O.K.
+    }
+
+// abbreviations that are most often at the end of a sentence
+ending_abbreviation = _{
+    ("etc") ~ WHITE_SPACE* ~ "."
+}
+
+roman_numeral = _{
+    &("M" | "D" | "C" | "L" | "X" | "V" | "I") ~
+    (
+        "M"* ~ (("C" ~ ("M" | "D")) | ("D"? ~ "C"*)) ~ (("X" ~ ("C" ~ "L")) | ("L"? ~ "X"*)) ~ (("I" ~ ("X" | "V")) | ("V"? ~ "I"*))
+    )
+}
+number = _{
+    NUMBER+ |
+    roman_numeral
+}
+
+possible_sentence_start = _{ WHITE_SPACE* ~ (UPPERCASE_LETTER | TITLECASE_LETTER | QUOTATION_MARK | NUMBER) }
+complete_ending = _{ (WHITE_SPACE* ~ SENTENCE_TERMINAL+)+ }
+
+quoted_internal_sentence = _{
+    &(NEWLINE+) |
+    (WHITE_SPACE+ ~ ending_abbreviation+ ~ &possible_sentence_start) | // abbreviation at the end of a sentence
+    ((number ~ WHITE_SPACE* ~ "." ~ WHITE_SPACE* ~ number) ~ &possible_sentence_start ~ !number) |
+    ((number ~ WHITE_SPACE* ~ "." ~ WHITE_SPACE* ~ number) ~ !(WHITE_SPACE* ~ (UPPERCASE_LETTER | TITLECASE_LETTER)) ~ quoted_internal_sentence) |
+    ((contraction | (WHITE_SPACE+ ~ abbreviation+) | (!(SENTENCE_TERMINAL | QUOTATION_MARK) ~ ANY ) | (SENTENCE_TERMINAL ~ !possible_sentence_start)) ~ quoted_internal_sentence) |
+    (complete_ending) |
+    &QUOTATION_MARK
+}
+
+quote_sentence = { &possible_sentence_start ~ !QUOTATION_MARK ~ WHITE_SPACE* ~ abbreviation* ~ quoted_internal_sentence }
+
+quote = {
+    (WHITE_SPACE* ~ quote_sentence ~ (!NEWLINE ~ WHITE_SPACE)*)+
+}
+
+quote_wrapper = _{
+    (QUOTATION_MARK ~ quote ~ (&(NEWLINE+) | QUOTATION_MARK))
+}
+
+internal_sentence = _{
+    &(NEWLINE+) |
+    (WHITE_SPACE+ ~ ending_abbreviation+ ~ &possible_sentence_start) |
+    (contraction ~ internal_sentence) |
+    ((number ~ WHITE_SPACE* ~ "." ~ WHITE_SPACE* ~ number) ~ ((&possible_sentence_start ~ !number) | &EOI)) |
+    ((number ~ WHITE_SPACE* ~ "." ~ WHITE_SPACE* ~ number) ~ !(WHITE_SPACE* ~ (UPPERCASE_LETTER | TITLECASE_LETTER)) ~ internal_sentence) |
+    (quote_wrapper ~ (&possible_sentence_start | internal_sentence | &EOI)) |
+    (((WHITE_SPACE+ ~ abbreviation+) | (!SENTENCE_TERMINAL ~ ANY ) | (SENTENCE_TERMINAL ~ !possible_sentence_start)) ~ internal_sentence) |
+    (complete_ending) |
+    (!WHITE_SPACE ~ ANY)+
+}
+
+sentence = { &possible_sentence_start ~ WHITE_SPACE* ~ abbreviation* ~ internal_sentence }
+
+sentence_list = _{ (WHITE_SPACE* ~ (sentence | ANY) ~ WHITE_SPACE*)* }

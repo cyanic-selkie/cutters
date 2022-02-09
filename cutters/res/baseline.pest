@@ -1,0 +1,11 @@
+complete_ending = _{ (WHITE_SPACE* ~ SENTENCE_TERMINAL+)+ }
+
+internal_sentence = _{
+    ((!SENTENCE_TERMINAL ~ ANY ) ~ internal_sentence) |
+    (complete_ending) |
+    (!WHITE_SPACE ~ ANY)+
+}
+
+sentence = { internal_sentence }
+
+sentence_list = _{ (WHITE_SPACE* ~ sentence ~ WHITE_SPACE*)* }
