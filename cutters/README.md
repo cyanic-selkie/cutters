@@ -1,7 +1,7 @@
 <div align="center">
     <h1>cutters</h1>
     <p>
-    A rule based sentence segmentation library.<br>
+    A rule based sentence segmentation library.
     </p>
 </div>
 <p align="center">
@@ -30,7 +30,7 @@
 ## Bindings
 
 Besides native Rust, bindings for the following programming languages are available:
-- [Python](https://github.com/cyanic-selkie/cutters/tree/main/bindings/python)
+- [Python](https://pypi.org/project/cutters/)
 
 ## Supported languages
 - Croatian (standard)
@@ -42,8 +42,7 @@ There is also an additional `Baseline` "language" that simply splits the text on
 
 After adding the `cutters` dependency to your `Cargo.toml` file, usage is simple.
 
-```Rust
-
+```rust
 fn main(){
     let text = r#"Petar Krešimir IV. je vladao od 1058. do 1074. St. Louis 9LX je događaj u svijetu šaha. To je prof.dr.sc. Ivan Horvat. Volim rock, punk, funk, pop itd. Tolstoj je napisao: "Sve sretne obitelji nalik su jedna na drugu. Svaka nesretna obitelj nesretna je na svoj način.""#;
 
@@ -51,7 +50,6 @@ fn main(){
 
     println!("{:#?}", sentences);
 }
-
 ```
 
 This results in the following output (note that the `str` struct fields are `&str`).

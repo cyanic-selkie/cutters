@@ -1,6 +1,6 @@
 [package]
 name = "cutters"
-version = "0.1.0"
+version = "0.1.2"
 authors = ["cyanic-selkie <cyanic-selkie@protonmail.com>"]
 edition = "2021"
 description = "Rule based sentence segmentation library."
