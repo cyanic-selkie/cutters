@@ -10,10 +10,12 @@ authors = [
 ]
 license = {text = "MIT"}
 description = "A rule based sentence segmentation library."
-repository = "https://github.com/cyanic-selkie/cutters"
 readme = "README.md"
 classifiers=[
     "Natural Language :: Croatian",
     "Natural Language :: English",
     "Topic :: Text Processing",
 ]
+
+[project.urls]
+Repository = "https://github.com/cyanic-selkie/cutters"
