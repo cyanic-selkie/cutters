@@ -46,6 +46,12 @@ number = _{
     roman_numeral
 }
 
+ignoreable = _{
+    ("(" ~ (!")" ~ ANY)* ~ ")") |
+    ("[" ~ (!"]" ~ ANY)* ~ "]") |
+    ("{" ~ (!"}" ~ ANY)* ~ "}")
+}
+
 possible_sentence_start = _{ WHITE_SPACE* ~ (UPPERCASE_LETTER | TITLECASE_LETTER | QUOTATION_MARK | NUMBER) }
 complete_ending = _{ (WHITE_SPACE* ~ SENTENCE_TERMINAL+)+ }
 
@@ -54,7 +60,7 @@ quoted_internal_sentence = _{
     (WHITE_SPACE+ ~ ending_abbreviation+ ~ &possible_sentence_start) | // abbreviation at the end of a sentence
     ((number ~ WHITE_SPACE* ~ "." ~ WHITE_SPACE* ~ number) ~ &possible_sentence_start ~ !number) |
     ((number ~ WHITE_SPACE* ~ "." ~ WHITE_SPACE* ~ number) ~ !(WHITE_SPACE* ~ (UPPERCASE_LETTER | TITLECASE_LETTER)) ~ quoted_internal_sentence) |
-    ((contraction | (WHITE_SPACE+ ~ abbreviation+) | (!(SENTENCE_TERMINAL | QUOTATION_MARK) ~ ANY ) | (SENTENCE_TERMINAL ~ !possible_sentence_start)) ~ quoted_internal_sentence) |
+    ((ignoreable | contraction | (WHITE_SPACE+ ~ abbreviation+) | (!(SENTENCE_TERMINAL | QUOTATION_MARK) ~ ANY ) | (SENTENCE_TERMINAL ~ !possible_sentence_start)) ~ quoted_internal_sentence) |
     (complete_ending) |
     &QUOTATION_MARK
 }
@@ -69,14 +75,19 @@ quote_wrapper = _{
     (QUOTATION_MARK ~ quote ~ (&(NEWLINE+) | QUOTATION_MARK))
 }
 
+quoted_phrase = _{
+    (QUOTATION_MARK ~ !possible_sentence_start ~ (!QUOTATION_MARK~ ANY)* ~ (&(NEWLINE+) | QUOTATION_MARK))
+}
+
 internal_sentence = _{
     &(NEWLINE+) |
     (WHITE_SPACE+ ~ ending_abbreviation+ ~ &possible_sentence_start) |
     (contraction ~ internal_sentence) |
+    (quoted_phrase ~ internal_sentence) |
     ((number ~ WHITE_SPACE* ~ "." ~ WHITE_SPACE* ~ number) ~ ((&possible_sentence_start ~ !number) | &EOI)) |
     ((number ~ WHITE_SPACE* ~ "." ~ WHITE_SPACE* ~ number) ~ !(WHITE_SPACE* ~ (UPPERCASE_LETTER | TITLECASE_LETTER)) ~ internal_sentence) |
     (quote_wrapper ~ (&possible_sentence_start | internal_sentence | &EOI)) |
-    (((WHITE_SPACE+ ~ abbreviation+) | (!SENTENCE_TERMINAL ~ ANY ) | (SENTENCE_TERMINAL ~ !possible_sentence_start)) ~ internal_sentence) |
+    ((ignoreable | (WHITE_SPACE+ ~ abbreviation+) | (!SENTENCE_TERMINAL ~ ANY ) | (SENTENCE_TERMINAL ~ !possible_sentence_start)) ~ internal_sentence) |
     (complete_ending) |
     (!WHITE_SPACE ~ ANY)+
 }

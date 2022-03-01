@@ -1,6 +1,6 @@
 [package]
 name = "cutters-python"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["cyanic-selkie <cyanic-selkie@protonmail.com>"]
 edition = "2021"
 
@@ -13,5 +13,5 @@ version = "*"
 path = "../../cutters"
 
 [dependencies.pyo3]
-version = "0.15.1"
+version = "0.16.0"
 features = ["extension-module"]

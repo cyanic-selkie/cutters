@@ -3,7 +3,7 @@ from setuptools_rust import Binding, RustExtension
 
 setup(
     name="cutters",
-    version="0.1.2",
+    version="0.1.3",
     description="A rule based sentence segmentation library.",
     long_description=open("README.md", "r", encoding="utf-8").read(),
     long_description_content_type="text/markdown",

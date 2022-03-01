@@ -57,6 +57,21 @@ mod test {
     }
 
     #[test]
+    fn brackets() {
+        let query_sentences = vec![
+            r#"European Union (hrv. Europska Unija) is a political and economic union of 27 member states that are located primarily in Europe."#,
+        ];
+
+        let text = query_sentences.join(" ");
+
+        let sentences = cut(&text);
+
+        for (sentence, query_sentence) in sentences.iter().zip(query_sentences) {
+            assert!(query_sentence == sentence.str);
+        }
+    }
+
+    #[test]
     fn quotes() {
         let query_quotes = vec![
             vec![vec![
