@@ -1,6 +1,6 @@
 [package]
 name = "cutters"
-version = "0.1.3"
+version = "0.1.4"
 authors = ["cyanic-selkie <cyanic-selkie@protonmail.com>"]
 edition = "2021"
 description = "Rule based sentence segmentation library."
@@ -10,5 +10,5 @@ repository = "https://github.com/cyanic-selkie/cutters"
 categories = ["text-processing"]
 
 [dependencies]
-pest = "2.1.3"
-pest_derive = "2.1.0"
+pest = "=2.5.7"
+pest_derive = "=2.5.7"

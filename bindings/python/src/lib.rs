@@ -1,3 +1,4 @@
+use ::cutters as cutters_rs;
 use pyo3::prelude::*;
 
 #[pyclass]
@@ -43,9 +44,9 @@ impl Sentence {
 #[pyfunction]
 pub fn cut(text: &str, language: &str) -> PyResult<Vec<Sentence>> {
     let language = match language {
-        "baseline" => cutters::Language::Baseline,
-        "hr" => cutters::Language::Croatian,
-        "en" => cutters::Language::English,
+        "baseline" => cutters_rs::Language::Baseline,
+        "hr" => cutters_rs::Language::Croatian,
+        "en" => cutters_rs::Language::English,
         _ => {
             return Err(pyo3::exceptions::PyValueError::new_err(format!(
                 "Language {} not supported.",
@@ -54,7 +55,7 @@ pub fn cut(text: &str, language: &str) -> PyResult<Vec<Sentence>> {
         }
     };
 
-    let sentences = cutters::cut(text, language);
+    let sentences = cutters_rs::cut(text, language);
     let mut sentences_python = vec![];
 
     for sentence in &sentences {
